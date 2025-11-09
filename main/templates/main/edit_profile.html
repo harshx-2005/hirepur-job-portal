@@ -1,0 +1,251 @@
+{% extends 'main/base.html' %}
+{% load static %}
+{% load custom_filters %}
+
+{% block content %}
+<div class="profile-edit-wrapper">
+  <div class="profile-edit-glass">
+    <div class="profile-header">
+      <h1><i class="fas fa-user-cog"></i> Edit Profile</h1>
+    </div>
+
+    <form method="post" enctype="multipart/form-data" class="profile-form">
+      {% csrf_token %}
+      <div class="avatar-upload">
+        {% if user_type == 'seeker' %}
+        <div class="avatar-preview" style="background-image: url('{% if form.instance.profile_picture %}{{ form.instance.profile_picture.url }}{% else %}{% static 'images/default-avatar.svg' %}{% endif %}')"></div>
+        {% else %}
+        <div class="logo-preview" style="background-image: url('{% if form.instance.company_logo %}{{ form.instance.company_logo.url }}{% else %}{% static 'images/default-company.svg' %}{% endif %}')"></div>
+        {% endif %}
+        <label class="upload-btn">
+          <i class="fas fa-camera"></i>
+          {% if user_type == 'seeker' %}
+            <input type="file" name="profile_picture" accept="image/*" id="id_profile_picture">
+          {% else %}
+            <input type="file" name="company_logo" accept="image/*" id="id_company_logo">
+          {% endif %}
+        </label>
+      </div>
+
+      <div class="form-grid">
+        <!-- Personal Info Column -->
+        <div class="form-column">
+          <div class="input-group floating">
+            <input type="text" id="full_name" name="full_name" value="{{ form.full_name.value }}" required>
+            <label for="full_name">Full Name</label>
+            <i class="fas fa-user"></i>
+          </div>
+
+          <div class="input-group floating">
+            <input type="tel" id="phone" name="phone_number" value="{{ form.phone_number.value }}" required pattern="^\+?\d{10,15}$" title="Enter a valid phone number with optional country code. E.g. +919876543210 or 9876543210">
+            <label for="phone">Phone Number</label>
+            <i class="fas fa-phone"></i>
+          </div>
+
+          <div class="input-group floating">
+            <select id="gender" name="gender" required>
+              <option value="M" {% if form.gender.value == 'M' %}selected{% endif %}>Male</option>
+              <option value="F" {% if form.gender.value == 'F' %}selected{% endif %}>Female</option>
+              <option value="O" {% if form.gender.value == 'O' %}selected{% endif %}>Other</option>
+            </select>
+            <label for="gender">Gender</label>
+            <i class="fas fa-venus-mars"></i>
+          </div>
+
+          {% if user_type == 'seeker' %}
+          <div class="input-group floating">
+            <input type="number" id="age" name="age" value="{{ form.age.value }}">
+            <label for="age">Age</label>
+            <i class="fas fa-birthday-cake"></i>
+          </div>
+          {% endif %}
+        </div>
+
+        <!-- Professional Info Column -->
+        <div class="form-column">
+          {% if user_type == 'employer' %}
+          <div class="input-group floating">
+            <input type="text" id="company" name="company_name" value="{{ form.company_name.value }}" required>
+            <label for="company">Company Name</label>
+            <i class="fas fa-building"></i>
+          </div>
+          <!-- Company Website -->
+          <div class="input-group floating">
+            <input type="url" id="company_website" name="company_website" value="{{ form.company_website.value }}">
+            <label for="company_website">Company Website</label>
+            <i class="fas fa-globe"></i>
+          </div>
+
+          <!-- Company Size -->
+          <div class="input-group floating">
+            <select id="company_size" name="company_size">
+              <option value="">Select Company Size</option>
+              <option value="1-10" {% if form.company_size.value == '1-10' %}selected{% endif %}>1–10 Employees</option>
+              <option value="11-50" {% if form.company_size.value == '11-50' %}selected{% endif %}>11–50 Employees</option>
+              <option value="51-200" {% if form.company_size.value == '51-200' %}selected{% endif %}>51–200 Employees</option>
+              <option value="201-500" {% if form.company_size.value == '201-500' %}selected{% endif %}>201–500 Employees</option>
+              <option value="500+" {% if form.company_size.value == '500+' %}selected{% endif %}>500+ Employees</option>
+            </select>
+            <label for="company_size">Company Size</label>
+            <i class="fas fa-users"></i>
+          </div>
+          {% endif %}
+
+          {% if user_type == 'seeker' %}
+          <div class="input-group floating">
+            <input type="text" id="profession" name="profession" value="{{ form.profession.value }}">
+            <label for="profession">Profession</label>
+            <i class="fas fa-briefcase"></i>
+          </div>
+
+          <div class="input-group floating">
+            <select id="experience_level" name="experience_level" required>
+              <option value="">Select Experience Level</option>
+              <option value="entry" {% if form.experience_level.value == 'entry' %}selected{% endif %}>Entry Level</option>
+              <option value="mid" {% if form.experience_level.value == 'mid' %}selected{% endif %}>Mid Level</option>
+              <option value="senior" {% if form.experience_level.value == 'senior' %}selected{% endif %}>Senior Level</option>
+            </select>
+            <label for="experience_level">Experience Level</label>
+            <i class="fas fa-level-up-alt"></i>
+          </div>
+
+          <div class="input-group floating">
+            <select id="preferred_work_mode" name="preferred_work_mode" required>
+              <option value="">Select Work Mode</option>
+              <option value="remote" {% if form.preferred_work_mode.value == 'remote' %}selected{% endif %}>Remote</option>
+              <option value="hybrid" {% if form.preferred_work_mode.value == 'hybrid' %}selected{% endif %}>Hybrid</option>
+              <option value="onsite" {% if form.preferred_work_mode.value == 'onsite' %}selected{% endif %}>Onsite</option>
+            </select>
+            <label for="preferred_work_mode">Preferred Work Mode</label>
+            <i class="fas fa-briefcase"></i>
+          </div>
+
+
+          <div class="input-group floating">
+            <input type="text" id="skills" name="skills" value="{{ form.skills.value }}">
+            <label for="skills">Skills (comma-separated)</label>
+            <i class="fas fa-tools"></i>
+          </div>
+          {% endif %}
+        </div>
+      </div>
+
+      <!-- Address Field -->
+      <div class="input-group floating">
+        <textarea id="address" name="address">{{ form.address.value }}</textarea>
+        <label for="address">Address</label>
+        <i class="fas fa-map-marker-alt"></i>
+      </div>
+
+      <!-- Resume Upload (Seeker Only) -->
+      {% if user_type == 'seeker' %}
+      <div class="resume-upload-card">
+        <h3><i class="fas fa-file-alt"></i> Resume</h3>
+        <div class="resume-preview {% if not form.resume.value %}empty{% endif %}">
+          {% if form.resume.value %}
+          <div class="resume-file">
+            <i class="fas fa-file-pdf"></i>
+            <div class="file-info">
+              <span class="filename">{{ form.resume.value.name|basename|truncatechars:25 }}</span>
+              <span class="filesize">{{ form.resume.value.size|filesizeformat }}</span>
+            </div>
+            <a href="{{ form.resume.value.url }}" download class="download-btn">
+              <i class="fas fa-download"></i>
+            </a>
+          </div>
+          {% endif %}
+          <label class="resume-upload-btn">
+            <input type="file" name="resume" accept=".pdf,.doc,.docx">
+            <span class="btn">
+              <i class="fas fa-cloud-upload-alt"></i>
+              {% if form.resume.value %}Replace Resume{% else %}Upload Resume{% endif %}
+            </span>
+            <small>PDF or Word (max 5MB)</small>
+          </label>
+        </div>
+      </div>
+      {% endif %}
+
+      <!-- Form Actions -->
+      <div class="form-actions">
+        <button type="submit" class="btn primary">
+          <i class="fas fa-save"></i> Save Changes
+        </button>
+        <a href="{% url 'profile' %}" class="btn cancel">
+          <i class="fas fa-times"></i> Cancel
+        </a>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- JS: Profile Picture & Resume Preview -->
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    const seekerInput = document.getElementById("id_profile_picture");
+    const seekerPreview = document.querySelector(".avatar-preview");
+
+    const employerInput = document.getElementById("id_company_logo");
+    const employerPreview = document.querySelector(".logo-preview");
+
+    if (seekerInput) {
+      seekerInput.addEventListener("change", function () {
+        const file = seekerInput.files[0];
+        if (file) {
+          const reader = new FileReader();
+          reader.onload = function (e) {
+            seekerPreview.style.backgroundImage = `url('${e.target.result}')`;
+          };
+          reader.readAsDataURL(file);
+        }
+      });
+    }
+
+    if (employerInput) {
+      employerInput.addEventListener("change", function () {
+        const file = employerInput.files[0];
+        if (file) {
+          const reader = new FileReader();
+          reader.onload = function (e) {
+            employerPreview.style.backgroundImage = `url('${e.target.result}')`;
+          };
+          reader.readAsDataURL(file);
+        }
+      });
+    }
+  });
+
+  const resumeInput = document.querySelector("input[name='resume']");
+  const resumePreviewContainer = document.querySelector(".resume-preview");
+
+  if (resumeInput && resumePreviewContainer) {
+    resumeInput.addEventListener("change", function () {
+      const file = resumeInput.files[0];
+      if (file) {
+        const size = (file.size / (1024 * 1024)).toFixed(2);
+        const name = file.name.length > 25 ? file.name.slice(0, 22) + "..." : file.name;
+        const previewHTML = `
+          <div class="resume-file">
+            <i class="fas fa-file-pdf"></i>
+            <div class="file-info">
+              <span class="filename">${name}</span>
+              <span class="filesize">${size} MB</span>
+            </div>
+          </div>
+        `;
+        resumePreviewContainer.classList.remove("empty");
+        resumePreviewContainer.innerHTML = previewHTML;
+      }
+    });
+  }
+
+  document.getElementById('experience_level').addEventListener('invalid', function () {
+  this.setCustomValidity('Please select your experience level');
+});
+document.getElementById('experience_level').addEventListener('change', function () {
+  this.setCustomValidity('');
+});
+
+</script>
+
+{% endblock %}

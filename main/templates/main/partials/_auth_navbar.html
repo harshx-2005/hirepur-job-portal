@@ -1,0 +1,53 @@
+{% load static %}
+<div class="auth-navbar">
+    <!-- Logo -->
+    <div class="auth-nav-brand">
+        <img src="{% static 'images/logo.svg' %}" alt="HirePur Logo">
+        <span>HirePur</span>
+    </div>
+
+    <!-- Search Bar -->
+    <div class="auth-nav-search">
+        <form method="GET" action="{% url 'home' %}">
+            <input type="text" name="q" placeholder="Search jobs..." value="{{ request.GET.q }}">
+            <button type="submit"><i class="fas fa-search"></i></button>
+        </form>
+    </div>
+
+    <!-- Navigation Links -->
+    <div class="auth-nav-links">
+        <a href="{% url 'home' %}" class="{% if request.path == '/home/' %}active{% endif %}">
+            <i class="fas fa-home"></i>
+            <span>Home</span>
+        </a>
+        
+        {% if user_type == 'seeker' %}
+            <a href="{% url 'applied_jobs' %}" class="{% if request.path == '/applied-jobs/' %}active{% endif %}">
+                <i class="fas fa-file-alt"></i>
+                <span>Applied Jobs</span>
+            </a>
+        {% else %}
+            <a href="{% url 'posted_jobs' %}" class="{% if request.path == '/posted-jobs/' %}active{% endif %}">
+                <i class="fas fa-briefcase"></i>
+                <span>Posted Jobs</span>
+            </a>
+        {% endif %}
+        {% if user_type == 'employer' %}
+            <a href="{% url 'posted_jobs' %}" class="{% if request.path == '/employer/posted-jobs/' %}active{% endif %}">
+                <i class="fas fa-briefcase"></i>
+                <span>Posted Jobs</span>
+            </a>
+        {% endif %}
+        <div class="auth-nav-profile">
+            <img src="{{ user.profile_picture.url|default:'/static/images/default-profile.png' }}" alt="Profile" class="profile-pic">
+            <div class="profile-dropdown">
+                <span>{{ user.email }}</span>
+                <div class="dropdown-content">
+                    <a href="{% url 'profile' %}"><i class="fas fa-user"></i> My Profile</a>
+                    <a href="{% url 'edit_profile' %}"><i class="fas fa-cog"></i> Settings</a>
+                    <a href="{% url 'logout' %}"><i class="fas fa-sign-out-alt"></i> Logout</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

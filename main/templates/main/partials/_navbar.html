@@ -1,0 +1,22 @@
+<nav class="navbar">
+    <div class="navbar-brand">
+        <a href="{% url 'home' %}">HirePur</a>
+    </div>
+
+    <div class="navbar-links">
+        {% if user.is_authenticated %}
+            <!-- Logged-in user: Show profile or logout -->
+            <div class="user-profile">
+                <img src="{{ user.profile_picture.url|default:'/static/images/default-profile.png' }}" class="profile-icon">
+                <div class="profile-dropdown">
+                    <a href="{% url 'profile' %}"><i class="fas fa-user"></i> Profile</a>
+                    <a href="{% url 'logout' %}"><i class="fas fa-sign-out-alt"></i> Logout</a>
+                </div>            
+    </div>
+        {% else %}
+            <!-- Not logged in: Show both registration options -->
+            <a href="{% url 'employer_register' %}">For Employers</a>
+            <a href="{% url 'seeker_register' %}">For Job Seekers</a>
+        {% endif %}
+    </div>
+</nav>

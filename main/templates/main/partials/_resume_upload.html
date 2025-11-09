@@ -1,0 +1,46 @@
+{% if user_type == 'seeker' %}
+<div class="resume-upload-section">
+  <h3 class="resume-section-title">
+    <i class="fas fa-file-alt"></i> Resume
+    {% if form.resume.value %}
+    <span class="resume-status-badge">Uploaded</span>
+    {% endif %}
+  </h3>
+
+  <div class="resume-upload-box {% if form.resume.value %}has-file{% endif %}">
+    <!-- Current Resume Preview -->
+    {% if form.resume.value %}
+    <div class="current-resume">
+      <i class="fas fa-file-pdf resume-icon"></i>
+      <div class="resume-info">
+        <a href="{{ form.resume.value.url }}" target="_blank" class="resume-filename">
+          {{ form.resume.value.name|slice:"25" }}{% if form.resume.value.name|length > 25 %}...{% endif %}
+        </a>
+        <span class="resume-filesize">
+          {{ form.resume.value.size|filesizeformat }}
+        </span>
+      </div>
+      <a href="{{ form.resume.value.url }}" download class="download-btn">
+        <i class="fas fa-download"></i>
+      </a>
+    </div>
+    {% endif %}
+
+    <!-- Upload Area -->
+    <div class="upload-area">
+      <input type="file" id="id_resume" name="resume" accept=".pdf,.doc,.docx" class="resume-input">
+      <label for="id_resume" class="upload-label">
+        <i class="fas fa-cloud-upload-alt upload-icon"></i>
+        <span class="upload-text">
+          {% if form.resume.value %}
+          Replace Resume (PDF, DOC)
+          {% else %}
+          Upload Your Resume (PDF, DOC)
+          {% endif %}
+        </span>
+        <span class="file-requirements">Max 5MB</span>
+      </label>
+    </div>
+  </div>
+</div>
+{% endif %}

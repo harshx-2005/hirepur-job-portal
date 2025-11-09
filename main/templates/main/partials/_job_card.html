@@ -1,0 +1,42 @@
+<div class="job-card-modern" onclick="window.location='{% url 'job_detail' job.id %}'">
+    <div class="job-card-content-modern">
+        <div class="job-header-modern">
+            <div class="job-title-company">
+                <h3>{{ job.title }}</h3>
+                <p class="company-name">{{ job.employer.company_name }}</p>
+            </div>
+            <div class="salary-modern">Salary: ₹{{ job.salary }}</div>
+        </div>
+        
+        <div class="job-meta-modern">
+            <span><i class="fas fa-map-marker-alt"></i> {{ job.get_location_display|title }}</span>
+            <span><i class="fas fa-briefcase"></i> {{ job.get_experience_required_display }}</span>
+            <span><i class="far fa-clock"></i> {{ job.posted_on|timesince }} ago</span>
+        </div>
+        
+        <div class="job-skills-modern">
+            {% for skill in job.skills_required.all|slice:":4" %}
+                <span class="skill-tag-modern">{{ skill.name }}</span>
+            {% endfor %}
+        </div>
+    </div>
+    
+    <div class="job-actions-modern">
+        <button class="save-btn-modern" onclick="event.stopPropagation()">
+            <i class="far fa-bookmark"></i> Save
+        </button>
+        {% if user.is_authenticated %}
+            {% if user.user_type == 'seeker' or not user == job.employer %}
+                <button class="apply-btn-modern" 
+                        onclick="event.stopPropagation(); window.location='{% url 'apply_to_job' job.id %}'">
+                    Apply Now
+                </button>
+            {% endif %}
+        {% else %}
+            <button class="login-btn-modern" 
+                    onclick="event.stopPropagation(); window.location='{% url 'login' %}?next={% url 'job_detail' job.id %}'">
+                Login to Apply
+            </button>
+        {% endif %}
+    </div>
+</div>

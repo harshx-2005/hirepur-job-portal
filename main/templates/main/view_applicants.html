@@ -1,0 +1,60 @@
+{% extends 'main/base.html' %}
+{% block title %}Applications for {{ job.title }}{% endblock %}
+
+{% block content %}
+<div>
+  <h2>Applications for: {{ job.title }}</h2>
+  <p><strong>Company:</strong> {{ job.employer.employerprofile.company_name }}</p>
+
+  {% if applications %}
+    <table border="1" cellpadding="8">
+      <thead>
+        <tr>
+          <th>Applicant Name</th>
+          <th>Email</th>
+          <th>Resume</th>
+          <th>Cover Letter</th>
+          <th>Status</th>
+          <th>Update Status</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for application in applications %}
+        <tr>
+          <td>{{ application.seeker.full_name }}</td>
+          <td>{{ application.seeker.user.email }}</td>
+          <td>
+            {% if application.resume %}
+              <a href="{{ application.resume.url }}" target="_blank">View Resume</a>
+            {% else %}
+              Not Uploaded
+            {% endif %}
+          </td>
+          <td>
+            {% if application.cover_letter %}
+              <a href="{{ application.cover_letter.url }}" target="_blank">View Cover Letter</a>
+            {% else %}
+              Not Uploaded
+            {% endif %}
+          </td>
+          <td>{{ application.get_status_display }}</td>
+          <td>
+            <form method="post" action="{% url 'update_application_status' application.id %}">
+              {% csrf_token %}
+              <select name="status">
+                <option value="pending" {% if application.status == 'pending' %}selected{% endif %}>Pending</option>
+                <option value="accepted" {% if application.status == 'accepted' %}selected{% endif %}>Accepted</option>
+                <option value="rejected" {% if application.status == 'rejected' %}selected{% endif %}>Rejected</option>
+              </select>
+              <button type="submit">Update</button>
+            </form>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  {% else %}
+    <p>No applications yet for this job.</p>
+  {% endif %}
+</div>
+{% endblock %}

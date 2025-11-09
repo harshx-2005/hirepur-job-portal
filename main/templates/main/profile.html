@@ -1,0 +1,146 @@
+{% extends 'main/base.html' %}
+{% load static %}
+{% block title %}My Profile – HirePur{% endblock %}
+
+{% block content %}
+<div class="profile-container">
+  <div class="profile-card">
+    {% if user_type == 'employer' %}
+      <!-- Employer Profile -->
+      <div class="profile-header">
+        <div class="profile-avatar">
+  <img src="{% if profile.company_logo %}{{ profile.company_logo.url }}{% else %}{% static 'images/default-company.svg' %}{% endif %}" alt="Company Logo" class="avatar-img">
+</div>
+
+        <h1 style="color:white;">{{ profile.full_name }}</h1>
+        <p class="profile-role" style="color:white;" data-role="employer">Employer</p>
+      </div>
+
+      <div class="profile-details">
+        <div class="detail-group">
+          <h3>Personal Information</h3>
+          <div class="detail-item">
+            <span class="detail-label">Full Name:</span>
+            <span class="detail-value">{{ profile.full_name }}</span>
+          </div>
+          <div class="detail-item">
+            <span class="detail-label">Email:</span>
+            <span class="detail-value">{{ user.email }}</span>
+          </div>
+          <div class="detail-item">
+            <span class="detail-label">Contact:</span>
+            <span class="detail-value">{{ profile.phone_number }}</span>
+          </div>
+          <div class="detail-item">
+            <span class="detail-label">Gender:</span>
+            <span class="detail-value">{{ profile.get_gender_display }}</span>
+          </div>
+        </div>
+
+        <div class="detail-group">
+          <h3>Company Information</h3>
+          <div class="detail-item">
+            <span class="detail-label">Company Name:</span>
+            <span class="detail-value">{{ profile.company_name }}</span>
+          </div>
+          <div class="detail-item">
+            <span class="detail-label">Company Address:</span>
+            <span class="detail-value">{{ profile.address }}</span>
+          </div>
+           <div class="detail-item">
+    <span class="detail-label">Company Website:</span>
+    <span class="detail-value">
+      {% if profile.company_website %}
+        <a href="{{ profile.company_website }}" target="_blank">{{ profile.company_website }}</a>
+      {% else %}
+        Not Provided
+      {% endif %}
+    </span>
+  </div>
+
+  <div class="detail-item">
+    <span class="detail-label">Company Size:</span>
+    <span class="detail-value">{{ profile.get_company_size_display }}</span>
+  </div>
+        </div>
+      </div>
+
+    {% elif user_type == 'seeker' %}
+      <!-- Job Seeker Profile -->
+      <div class="profile-header">
+        <div class="profile-avatar">
+          <img src="{% if profile.profile_picture %}{{ profile.profile_picture.url }}{% else %}/static/images/default-avatar.png{% endif %}" alt="Profile Picture" class="avatar-img">
+        </div>
+        <h1 style="color:white;">{{ profile.full_name }}</h1>
+        <p class="profile-role" style="color:white;" data-role="seeker">Job Seeker</p>
+      </div>
+
+      <div class="profile-details">
+        <div class="detail-group">
+          <h3>Personal Information</h3>
+          <div class="detail-item">
+            <span class="detail-label">Email:</span>
+            <span class="detail-value">{{ user.email }}</span>
+          </div>
+          <div class="detail-item">
+            <span class="detail-label">Age:</span>
+            <span class="detail-value">{{ profile.age }}</span>
+          </div>
+          <div class="detail-item">
+            <span class="detail-label">Gender:</span>
+            <span class="detail-value">{{ profile.get_gender_display }}</span>
+          </div>
+          <div class="detail-item">
+            <span class="detail-label">Contact:</span>
+            <span class="detail-value">{{ profile.phone_number }}</span>
+          </div>
+          <div class="detail-item">
+            <span class="detail-label">Location:</span>
+            <span class="detail-value">{{ profile.address }}</span>
+          </div>
+        </div>
+
+        <div class="detail-group">
+          <h3>Professional Information</h3>
+          <div class="detail-item">
+            <span class="detail-label">Profession:</span>
+            <span class="detail-value">{{ profile.profession }}</span>
+          </div>
+          <div class="detail-item">
+            <span class="detail-label">Experience:</span>
+            <span class="detail-value">{{ profile.get_experience_level_display }}</span>
+          </div>
+          <div class="detail-item">
+            <span class="detail-label">Work Preference:</span>
+            <span class="detail-value">{{ profile.get_preferred_work_mode_display }}</span>
+          </div>
+          <div class="detail-item">
+            <span class="detail-label">Skills:</span>
+            <span class="detail-value">{{ profile.skills }}</span>
+          </div>
+          <div class="detail-item">
+            <span class="detail-label">Resume:</span>
+            {% if profile.resume %}
+              <a href="{{ profile.resume.url }}" class="detail-value resume-link" target="_blank">View Resume</a>
+            {% else %}
+              <span class="detail-value">No resume uploaded</span>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+    {% endif %}
+
+    <div class="profile-actions">
+      <a href="{% url 'edit_profile' %}" class="btn btn-primary">Edit Profile</a>
+      {% if user_type == 'seeker' %}
+        <a href="{% url 'upload_resume' %}" class="btn btn-secondary">
+          <i class="fas fa-file-upload"></i> Upload Resume
+        </a>
+      {% endif %}
+      <a href="{% url 'logout' %}" class="btn btn-logout" style="color:white;">
+        <i class="fas fa-sign-out-alt"></i> Logout
+      </a>
+    </div>
+  </div>
+</div>
+{% endblock %}

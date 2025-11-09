@@ -1,0 +1,31 @@
+{% extends "main/base.html" %}
+{% load static %}
+{% block content %}
+<section class="hero">
+    <div class="hero-content">
+        <h1 class="gradient-text">Welcome to <span>HirePur</span></h1>
+        <p class="subtitle">Your gateway to smarter hiring powered by AI</p>
+        <div class="cta-buttons">
+            <a href="{% url 'employer_register' %}" class="hirepur-btn hirepur-btn-primary">Post a Job</a>
+            <a href="{% url 'seeker_register' %}" class="hirepur-btn hirepur-btn-secondary">Browse Jobs</a>
+        </div>
+    </div>
+    <div class="hero-illustration">
+        <img src="{% static 'images/hero-illustration.svg' %}" alt="Hiring illustration">
+    </div>
+</section>
+
+<section class="jobs-section">
+    <h2><i class="fas fa-bolt"></i> Latest Job Opportunities</h2>
+    <div class="jobs-grid">
+        {% for job in jobs %}
+            {% include 'main/partials/_job_card.html' with job=job %}
+        {% empty %}
+            <div class="no-jobs">
+                <i class="fas fa-search"></i>
+                <p>Login To Post or Apply For a Desired Job!</p>
+            </div>
+        {% endfor %}
+    </div>
+</section>
+{% endblock %}

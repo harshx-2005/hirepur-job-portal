@@ -1,0 +1,47 @@
+{% extends 'main/base.html' %}
+{% block title %}Apply for {{ job.title }}{% endblock %}
+
+{% block content %}
+<div>
+  <h2>Apply for: {{ job.title }}</h2>
+
+  <!-- Company Details -->
+  <div>
+    {% if job.employer.employerprofile.company_logo %}
+      <img src="{{ job.employer.employerprofile.company_logo.url }}" alt="Company Logo" width="120">
+    {% endif %}
+    <p><strong>Company:</strong> {{ job.employer.employerprofile.company_name }}</p>
+  </div>
+
+  <!-- Job Information -->
+  <div>
+    <p><strong>Location:</strong> {{ job.get_location_display }}</p>
+    <p><strong>Job Type:</strong> {{ job.get_job_type_display }}</p>
+    <p><strong>Work Mode:</strong> {{ job.get_work_mode_display }}</p>
+    <p><strong>Salary:</strong> ₹{{ job.salary }}</p>
+    <p><strong>Experience Required:</strong> {{ job.get_experience_required_display }}</p>
+    <p><strong>Posted On:</strong> {{ job.posted_on|date:"M d, Y" }}</p>
+    <p><strong>Description:</strong> {{ job.description }}</p>
+  </div>
+
+  <hr>
+
+  <!-- Application Form -->
+  <h3>Submit Your Application</h3>
+  <form method="POST" enctype="multipart/form-data">
+    {% csrf_token %}
+
+    <div>
+      <label for="id_resume"><strong>Resume (PDF/DOC):</strong></label><br>
+      {{ form.resume }}<br><br>
+    </div>
+
+    <div>
+      <label for="id_cover_letter"><strong>Cover Letter (PDF/DOC):</strong></label><br>
+      {{ form.cover_letter }}<br><br>
+    </div>
+
+    <button type="submit">Submit Application</button>
+  </form>
+</div>
+{% endblock %}

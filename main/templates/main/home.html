@@ -1,0 +1,212 @@
+{% extends "main/base.html" %}
+{% load static %}
+{% block content %}
+<div class="home-container">
+    <!-- Hero Search Section -->
+    <section class="search-hero">
+        <div class="search-container">
+            <h1>Find Your <span>Dream Job</span> Today</h1>
+            <p style="color:white;">AI-powered job matching for the modern workforce</p>
+
+            <form class="search-form" method="GET" action="{% url 'home' %}">
+                <div class="search-input-group">
+                    <i class="fas fa-search"></i>
+                    <input type="text" name="q" placeholder="Job title, keywords, or company" value="{{ request.GET.q }}">
+                   <button 
+                    type="submit"
+                    class="search-btn"
+                    style="background: var(--accent-color); color: white;"
+                    onmouseover="this.style.color='var(--accent-color)';this.style.backgroundColor='white'"
+                    onmouseout="this.style.color='white';this.style.backgroundColor='var(--accent-color)'"
+                    >
+                        Search
+                    </button>
+                </div>
+            </form>
+
+            <div class="quick-filters">
+                <span>Quick filters:</span>
+                <a href="?job_type=remote">Remote</a>
+                <a href="?job_type=hybrid">Hybrid</a>
+                <a href="?experience=fresher">Fresher</a>
+                <a href="?salary=120000+">12+ LPA</a>
+            </div>
+        </div>
+    </section>
+
+    <div class="user-nav">
+    <div class="user-nav-links">
+        <a href="{% url 'home' %}" class="{% if request.path == '/home/' %}active{% endif %}">
+            <i class="fas fa-home"></i> Home
+        </a>
+        {% if request.user.is_authenticated %}
+        {% if request.user.jobseekerprofile %}
+            <a href="{% url 'applied_jobs' %}" class="{% if 'applied-jobs' in request.path %}active{% endif %}">
+                <i class="fas fa-file-alt"></i> Applied Jobs
+            </a>
+        {% elif request.user.employerprofile %}
+            <a href="{% url 'post_job' %}" class="{% if 'post-job' in request.path %}active{% endif %}">
+                <i class="fas fa-briefcase"></i> Post Job
+            </a>
+            <a href="{% url 'posted_jobs' %}" class="{% if 'posted-jobs' in request.path %}active{% endif %}">
+                <i class="fas fa-list"></i> Posted Jobs
+            </a>
+        {% endif %}
+    {% endif %}
+    </div>
+
+    
+</div>
+
+    <!-- Main Content Area -->
+    <div class="home-main">
+        <!-- Filters Sidebar -->
+<aside class="filters-sidebar">
+    <form method="GET" action="{% url 'home' %}">
+        {% if request.GET.q %}
+            <input type="hidden" name="q" value="{{ request.GET.q }}">
+        {% endif %}
+
+        <div class="filters-header">
+            <h3><i class="fas fa-sliders-h"></i> Filters</h3>
+            <a href="{% url 'home' %}" class="clear-filters">Clear All</a>
+        </div>
+
+        <!-- Job Type Filter -->
+        <div class="filter-group">
+            <h4>Job Type</h4>
+            {% for value, label in job_type_choices %}
+                <label>
+                    <input type="checkbox" name="job_type" value="{{ value }}"
+                        {% if value in selected_job_types %}checked{% endif %}>
+                    {{ label }}
+                </label><br>
+            {% endfor %}
+        </div>
+
+        <!-- Experience Filter -->
+        <div class="filter-group">
+            <h4>Experience</h4>
+            {% for value, label in experience_choices %}
+                <label>
+                    <input type="checkbox" name="experience" value="{{ value }}"
+                        {% if value in selected_experience %}checked{% endif %}>
+                    {{ label }}
+                </label><br>
+            {% endfor %}
+        </div>
+
+        <!-- Work Mode Filter -->
+        <div class="filter-group">
+            <h4>Work Mode</h4>
+            {% for value, label in work_mode_choices %}
+                <label>
+                    <input type="checkbox" name="work_mode" value="{{ value }}"
+                        {% if value in selected_work_modes %}checked{% endif %}>
+                    {{ label }}
+                </label><br>
+            {% endfor %}
+        </div>
+
+        <!-- City Filter -->
+        <div class="filter-group">
+            <h4>City</h4>
+            {% for value, label in city_choices %}
+                <label>
+                    <input type="checkbox" name="location" value="{{ value }}"
+                        {% if value in selected_locations %}checked{% endif %}>
+                    {{ label }}
+                </label><br>
+            {% endfor %}
+        </div>
+
+        <!-- Salary Range Filter -->
+        <div class="filter-group">
+            <h4>Salary</h4>
+            <input type="range" name="salary" min="0" max="200000" step="1000"
+                value="{{ request.GET.salary|default:0 }}" oninput="document.getElementById('salaryValue').innerText = this.value">
+            <span>₹ <span id="salaryValue">{{ request.GET.salary|default:"0" }}</span></span>
+        </div>
+
+        <button type="submit" class="apply-filters">Apply Filters</button>
+    </form>
+</aside>
+
+        <!-- Main Job Listings -->
+        <main class="job-listings">
+            <div class="listings-header">
+                <h2>{% if request.GET.q %}Results for "{{ request.GET.q }}"{% else %}Recommended Jobs{% endif %}</h2>
+                <form method="get" id="filterForm">
+                <div class="sort-options">
+                    <span>Sort by:</span>
+                    <select name="sort_by" id="sortSelect" onchange="this.form.submit()">
+                        <option value="">-- Select --</option>
+                        <option value="newest" {% if sort_by == 'newest' %}selected{% endif %}>Most Recent</option>
+                        <option value="salary_high" {% if sort_by == 'salary_high' %}selected{% endif %}>Highest Salary</option>
+                        <option value="salary_low" {% if sort_by == 'salary_low' %}selected{% endif %}>Lowest Salary</option>
+                    </select>
+
+                </div>
+            </form>
+            </div>
+
+            {% if jobs %}
+            <div class="jobs-grid">
+                {% for job in jobs %}
+                    {% include 'main/partials/_job_card.html' with job=job %}
+                {% endfor %}
+            </div>
+
+            <div class="pagination">
+                {% if jobs.has_previous %}
+                    <a href="?page=1" class="page-link">&laquo; First</a>
+                    <a href="?page={{ jobs.previous_page_number }}" class="page-link">Previous</a>
+                {% endif %}
+
+                <span class="current-page">
+                    Page {{ jobs.number }} of {{ jobs.paginator.num_pages }}
+                </span>
+
+                {% if jobs.has_next %}
+                    <a href="?page={{ jobs.next_page_number }}" class="page-link">Next</a>
+                    <a href="?page={{ jobs.paginator.num_pages }}" class="page-link">Last &raquo;</a>
+                {% endif %}
+            </div>
+            {% else %}
+            <div class="no-jobs">
+                <img src="{% static 'images/no-jobs.svg' %}" alt="No jobs found">
+                <h3>No jobs found matching your criteria</h3>
+                <p>Try adjusting your filters or search for different keywords</p>
+                <button class="reset-search">Reset Search</button>
+            </div>
+            {% endif %}
+        </main>
+    </div>
+</div>
+
+<!-- Application Modal -->
+<div class="modal" id="apply-modal">
+    <div class="modal-content">
+        <span class="close-modal">&times;</span>
+        <h3>Apply for <span id="job-title-modal"></span></h3>
+
+        <form id="application-form" method="POST" enctype="multipart/form-data">
+            {% csrf_token %}
+            <input type="hidden" name="job_id" id="job-id-input">
+
+            <div class="form-group">
+                <label for="resume">Upload Resume (PDF/DOC)</label>
+                <input type="file" id="resume" name="resume" accept=".pdf,.doc,.docx" required>
+                <small>Max file size: 5MB</small>
+            </div>
+
+            <div class="form-group">
+                <label for="cover-letter">Cover Letter (Optional)</label>
+                <textarea id="cover-letter" name="cover-letter" rows="5" placeholder="Tell the employer why you're a good fit for this position..."></textarea>
+            </div>
+
+            <button type="submit" class="submit-application">Submit Application</button>
+        </form>
+    </div>
+</div>
+{% endblock %}

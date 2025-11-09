@@ -1,0 +1,54 @@
+{% extends 'main/base.html' %}
+{% load static %}
+
+{% block title %}Job Seeker Register – HirePur{% endblock %}
+
+{% block content %}
+<div class="auth-container seeker-register">
+  <div class="auth-card">
+    <h2 class="auth-title">Job Seeker Registration</h2>
+    
+    <form method="post" class="auth-form">
+  {% csrf_token %}
+  {% if messages %}
+    {% for message in messages %}
+      <p style="color: red;">{{ message }}</p>
+    {% endfor %}
+  {% endif %}
+
+  <div class="form-group">
+    <label for="id_full_name">Full Name</label>
+    {{ profile_form.full_name }}
+  </div>
+
+  <div class="form-group">
+  <label for="id_username">Username</label>
+  {{ user_form.username }}
+</div>
+
+
+  <div class="form-group">
+    <label for="id_email">Email</label>
+    {{ user_form.email }}
+  </div>
+
+  <div class="form-group">
+    <label for="id_password1">Password</label>
+    {{ user_form.password1 }}
+  </div>
+
+  <div class="form-group">
+    <label for="id_password2">Confirm Password</label>
+    {{ user_form.password2 }}
+  </div>
+
+  <button type="submit" class="register-button">Register</button>
+</form>
+
+    
+    <p class="auth-footer">
+      Already have an account? <a href="{% url 'seeker_login' %}" class="text-link">Login here</a>
+    </p>
+  </div>
+</div>
+{% endblock %}

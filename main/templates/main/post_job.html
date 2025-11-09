@@ -1,0 +1,39 @@
+{% extends 'main/base.html' %}
+{% load static %}
+
+{% block title %}Post a Job{% endblock %}
+
+{% block content %}
+<div class="auth-container">
+  <div class="auth-card">
+    <h2 class="auth-title">Post a New Job</h2>
+    
+    <form method="POST" class="auth-form">
+      {% csrf_token %}
+      
+      {% if form.errors %}
+        <div class="error-message">
+          Please correct the errors below
+        </div>
+      {% endif %}
+      
+      {% for field in form %}
+      <div class="form-group {% if field.name in 'location,work_mode,experience_required' %}special-field{% endif %}">
+        <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+        {{ field }}
+        {% if field.errors %}
+          <div class="field-error">
+            {{ field.errors|join:", " }}
+          </div>
+        {% endif %}
+        {% if field.help_text %}
+          <small class="help-text">{{ field.help_text }}</small>
+        {% endif %}
+      </div>
+      {% endfor %}
+      
+      <button type="submit" class="register-button">Submit Job</button>
+    </form>
+  </div>
+</div>
+{% endblock %}

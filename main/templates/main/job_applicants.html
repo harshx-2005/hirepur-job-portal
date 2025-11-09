@@ -1,0 +1,50 @@
+{% extends 'main/base.html' %}
+{% load static %}
+{% block title %}Applicants for {{ job.title }}{% endblock %}
+
+{% block content %}
+<h2>Applicants for "{{ job.title }}"</h2>
+
+{% if applications %}
+    <table>
+        <thead>
+            <tr>
+                <th>Applicant</th>
+                <th>Resume</th>
+                <th>Cover Letter</th>
+                <th>Status</th>
+                <th>Change Status</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for app in applications %}
+                <tr>
+                    <td>{{ app.seeker.full_name }}</td>
+                    <td><a href="{{ app.resume.url }}" target="_blank">View Resume</a></td>
+                    <td>
+                        {% if app.cover_letter %}
+                            <a href="{{ app.cover_letter.url }}" target="_blank">View Cover Letter</a>
+                        {% else %}
+                            N/A
+                        {% endif %}
+                    </td>
+                    <td>{{ app.get_status_display }}</td>
+                    <td>
+                        <form method="POST" action="{% url 'update_application_status' app.id %}">
+                            {% csrf_token %}
+                            <select name="status">
+                                {% for val, label in app.STATUS_CHOICES %}
+                                    <option value="{{ val }}" {% if app.status == val %}selected{% endif %}>{{ label }}</option>
+                                {% endfor %}
+                            </select>
+                            <button type="submit">Update</button>
+                        </form>
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% else %}
+    <p>No applications yet for this job.</p>
+{% endif %}
+{% endblock %}
